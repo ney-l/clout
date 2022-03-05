@@ -11,11 +11,15 @@
     "start:dev": "nodemon",
     "start": "echo starting prod server",
     "test": "jest",
+    "test:watch": "jest --watch",
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./build"
   },
   "jest": {
     "testEnvironment": "node",
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
   },
   "keywords": [
     "clout",
