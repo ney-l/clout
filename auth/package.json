@@ -1,0 +1,35 @@
+{
+  "name": "clout-auth",
+  "version": "1.0.0",
+  "description": "Authentication microservice for Clout Social media app",
+  "main": "index.ts",
+  "scripts": {
+    "lint": "echo linting...",
+    "prettier": "echo checking Prettier formatting",
+    "prettier:fix": "echo fixing Prettier formatting",
+    "start:dev": "echo starting dev",
+    "start": "echo starting prod server",
+    "test": "npm t"
+  },
+  "keywords": [
+    "clout",
+    "auth"
+  ],
+  "author": "Neha Lanjewar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ney-l/clout/issues"
+  },
+  "homepage": "https://github.com/ney-l/clout#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.21",
+    "nodemon": "^2.0.15",
+    "ts-jest": "^27.1.3",
+    "ts-node": "^10.6.0",
+    "typescript": "^4.6.2"
+  }
+}
