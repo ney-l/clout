@@ -11,10 +11,6 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   rules: {
-    '@typescript-eslint/no-console': [
-      'error',
-      { allow: ['warn', 'error', 'info'] },
-    ],
-    '@typescript-eslint/quotes': ['single'],
+    'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
   },
 };

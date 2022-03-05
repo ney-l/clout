@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
     "prettier": "prettier src/**/*.ts",
     "prettier:fix": "prettier src/**/*.ts --write",
     "start:dev": "nodemon",
