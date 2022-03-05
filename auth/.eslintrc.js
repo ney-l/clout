@@ -12,10 +12,26 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
+    project: './tsconfig.json',
+    tsconfigRootDir: './',
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {},
+      node: {
+        extensions: ['.ts'],
+      },
+    },
   },
   plugins: ['@typescript-eslint'],
   rules: {
     'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
     'import/prefer-default-export': 'off',
+    'import/extensions': [
+      'error',
+      {
+        ts: 'never',
+      },
+    ],
   },
 };
