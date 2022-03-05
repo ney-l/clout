@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "prettier:fix",
+      "path": "auth/",
+      "problemMatcher": [],
+      "label": "npm: prettier:fix - auth",
+      "detail": "prettier src/**/*.ts --write"
+    },
+    {
+      "type": "npm",
+      "script": "lint:fix",
+      "path": "auth/",
+      "problemMatcher": ["$eslint-compact"],
+      "label": "npm: lint:fix - auth",
+      "detail": "eslint src/**/*.ts --fix"
+    }
+  ]
+}
