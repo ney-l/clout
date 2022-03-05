@@ -1,10 +1,4 @@
-import express from 'express';
-
-const app = express();
-
-app.get('*', (req, res) => {
-  res.json({ message: 'hello' });
-});
+import { app } from './app';
 
 const PORT = 3000;
 
