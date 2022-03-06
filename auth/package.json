@@ -4,8 +4,7 @@
   "description": "Authentication microservice for Clout Social media app",
   "main": "index.ts",
   "scripts": {
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
+    "lint": "eslint src",
     "prettier": "prettier src/**/*.ts",
     "prettier:fix": "prettier src/**/*.ts --write",
     "start:dev": "nodemon src/index.ts",
@@ -45,10 +44,14 @@
     "@typescript-eslint/parser": "^5.13.0",
     "eslint": "^8.10.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript-prettier": "^5.0.0",
+    "eslint-config-airbnb-typescript": "^16.1.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
     "jest": "^27.5.1",
+    "lint-staged": "^12.3.5",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
     "supertest": "^6.2.2",
@@ -56,5 +59,17 @@
     "ts-node": "^10.6.0",
     "tscpaths": "^0.0.9",
     "typescript": "^4.6.2"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "npm run prettier:fix",
+      "npm run lint",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run test"
+    }
   }
 }
