@@ -1,3 +1,4 @@
+import { STATUS_CODES } from '@/constants/statusCodes';
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 
@@ -7,8 +8,10 @@ const lowerCaseRegex = /(.*[a-z].*)/;
 const uppercaseRegex = /(.*[A-Z].*)/;
 const digitRegex = /(.*\d.*)/;
 
+const SIGNUP_ENDPOINT = '/api/auth/signup';
+
 signupRouter.post(
-  '/api/auth/signup',
+  SIGNUP_ENDPOINT,
   body('email').isEmail().withMessage('Email must be a valid email address.'),
   body('password').trim(),
   body('password')
@@ -27,7 +30,7 @@ signupRouter.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(422).send({ errors: errors.array() });
+      return res.status(STATUS_CODES.UNPROCESSABLE_ENTITY).send({});
     }
     // const { email } = req.body as { email?: string };
 
@@ -35,4 +38,8 @@ signupRouter.post(
   }
 );
 
-export { signupRouter };
+signupRouter.all(SIGNUP_ENDPOINT, (req, res) =>
+  res.status(STATUS_CODES.METHOD_NOT_ALLOWED).send({})
+);
+
+export { signupRouter, SIGNUP_ENDPOINT };
