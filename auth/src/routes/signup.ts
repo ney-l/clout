@@ -1,4 +1,5 @@
 import { STATUS_CODES } from '@/constants/statusCodes';
+import { User } from '@/models';
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { handleMethodNotAllowed } from './utils';
@@ -31,7 +32,7 @@ signupRouter.post(
     .matches(digitRegex)
     .withMessage('Password must contain at least one number'),
   body('password').escape(),
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -44,14 +45,23 @@ signupRouter.post(
     };
 
     if (/.+@[A-Z]/g.test(email)) {
-      res.sendStatus(422);
+      return res.sendStatus(422);
     }
 
     if (/[><'"/]/g.test(password)) {
-      res.sendStatus(422);
+      return res.sendStatus(422);
     }
 
-    return res.send({ email });
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.sendStatus(422);
+    }
+
+    // logic for saving user in the DB starts here
+    const newUser = await User.create({ email, password });
+
+    return res.status(STATUS_CODES.CREATED).send({ email: newUser.email });
   }
 );
 

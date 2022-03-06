@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from '@/app';
 import { SIGNUP_ENDPOINT } from '@/routes/signup';
+import { User } from '@/models';
 
 /**
  * Available methods in /api/auth/signup
@@ -49,14 +50,14 @@ describe('tests signup route method availability', () => {
       .expect(405);
   });
 
-  it('should return 200 for POST and OPTIONS requests to the signup route', async () => {
+  it('should return 201 for POST and OPTIONS requests to the signup route', async () => {
     await request(app)
       .post(SIGNUP_ENDPOINT)
       .send({
         email,
         password,
       })
-      .expect(200);
+      .expect(201);
   });
 
   it('should return POST and OPTIONS as the only allowed method from an OPTIONS request', async () => {
@@ -96,11 +97,11 @@ describe('tests validity of email input', () => {
       .expect(422);
   });
 
-  it('should return 200 if the email is valid', async () => {
+  it('should return 201 if the email is valid', async () => {
     await request(app)
       .post(SIGNUP_ENDPOINT)
       .send({ email: 'test@test.com', password })
-      .expect(200);
+      .expect(201);
   });
 });
 
@@ -177,11 +178,11 @@ describe('test validatity of password input', () => {
       .expect(422);
   });
 
-  it('should return 200 if the password is valid', async () => {
+  it('should return 201 if the password is valid', async () => {
     await request(app)
       .post(SIGNUP_ENDPOINT)
       .send({ email, password: 'Validpassword1' })
-      .expect(200);
+      .expect(201);
   });
 });
 
@@ -193,7 +194,7 @@ describe('tests sanitization of email input', () => {
     const response = await request(app)
       .post(SIGNUP_ENDPOINT)
       .send({ email, password: 'Valid123456' })
-      .expect(200);
+      .expect(201);
 
     expect(response.body.email).toBe(normalizedEmail);
   });
@@ -207,5 +208,33 @@ describe('tests sanitzation of password input', () => {
     await request(app)
       .post(SIGNUP_ENDPOINT)
       .send({ email: 'test@test.com', password });
+  });
+});
+
+describe('saving signed up user to database', () => {
+  const userInfo = {
+    email: 'test@test.com',
+    password: 'Valid123',
+  };
+  it('saves user successfully as long as user info is valid', async () => {
+    // send valid user info
+    const response = await request(app)
+      .post(SIGNUP_ENDPOINT)
+      .send(userInfo)
+      .expect(201);
+
+    // Receive the user info back from the route
+    expect(response.body.email).toEqual(userInfo.email);
+
+    // check whether user can be found in the db
+    const user = await User.findOne({ email: response.body.email });
+    expect(user).toBeDefined();
+    expect(user?.email).toBe(userInfo.email);
+  });
+
+  it('does not allows aving a user with a duplicate email', async () => {
+    await request(app).post(SIGNUP_ENDPOINT).send(userInfo).expect(201);
+
+    await request(app).post(SIGNUP_ENDPOINT).send(userInfo).expect(422);
   });
 });
