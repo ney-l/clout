@@ -49,7 +49,7 @@ describe('tests signup route method availability', () => {
       .expect(405);
   });
 
-  it('should return 200 for POST requests to the signup route', async () => {
+  it('should return 200 for POST and OPTIONS requests to the signup route', async () => {
     await request(app)
       .post(SIGNUP_ENDPOINT)
       .send({
@@ -57,6 +57,14 @@ describe('tests signup route method availability', () => {
         password,
       })
       .expect(200);
+  });
+
+  it('should return POST and OPTIONS as the only allowed method from an OPTIONS request', async () => {
+    const response = await request(app).options(SIGNUP_ENDPOINT);
+    expect(response.headers['access-control-allow-methods']).toContain('POST');
+    expect(response.headers['access-control-allow-methods']).toContain(
+      'OPTIONS'
+    );
   });
 });
 

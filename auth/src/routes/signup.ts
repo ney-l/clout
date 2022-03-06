@@ -1,6 +1,7 @@
 import { STATUS_CODES } from '@/constants/statusCodes';
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import { handleMethodNotAllowed } from './utils';
 
 const signupRouter = express.Router();
 
@@ -38,8 +39,19 @@ signupRouter.post(
   }
 );
 
-signupRouter.all(SIGNUP_ENDPOINT, (req, res) =>
-  res.status(STATUS_CODES.METHOD_NOT_ALLOWED).send({})
-);
+signupRouter.options(SIGNUP_ENDPOINT, (req, res) => {
+  res.header('access-control-allow-origin', '*');
+  res.header('access-control-allow-methods', 'POST,OPTIONS');
+  res.header(
+    'access-control-allow-headers',
+    'Content-Type, Authorization, Content-Length, X-Requested-With'
+  );
+  return res.sendStatus(200);
+});
+
+signupRouter.get(SIGNUP_ENDPOINT, handleMethodNotAllowed);
+signupRouter.put(SIGNUP_ENDPOINT, handleMethodNotAllowed);
+signupRouter.patch(SIGNUP_ENDPOINT, handleMethodNotAllowed);
+signupRouter.delete(SIGNUP_ENDPOINT, handleMethodNotAllowed);
 
 export { signupRouter, SIGNUP_ENDPOINT };
