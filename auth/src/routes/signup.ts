@@ -13,9 +13,12 @@ const SIGNUP_ENDPOINT = '/api/auth/signup';
 
 signupRouter.post(
   SIGNUP_ENDPOINT,
-  body('email').isEmail().withMessage('Email must be a valid email address.'),
-  body('password').trim(),
+  body('email')
+    .isEmail()
+    .withMessage('Email must be a valid email address.')
+    .normalizeEmail(),
   body('password')
+    .trim()
     .isLength({ min: 8, max: 32 })
     .withMessage('Password must be between 8 and 32 characters'),
   body('password')
@@ -27,15 +30,28 @@ signupRouter.post(
   body('password')
     .matches(digitRegex)
     .withMessage('Password must contain at least one number'),
+  body('password').escape(),
   (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return res.status(STATUS_CODES.UNPROCESSABLE_ENTITY).send({});
     }
-    // const { email } = req.body as { email?: string };
 
-    return res.send({});
+    const { email, password } = req.body as {
+      email: string;
+      password: string;
+    };
+
+    if (/.+@[A-Z]/g.test(email)) {
+      res.sendStatus(422);
+    }
+
+    if (/[><'"/]/g.test(password)) {
+      res.sendStatus(422);
+    }
+
+    return res.send({ email });
   }
 );
 

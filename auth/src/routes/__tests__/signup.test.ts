@@ -184,3 +184,28 @@ describe('test validatity of password input', () => {
       .expect(200);
   });
 });
+
+describe('tests sanitization of email input', () => {
+  it('should not contain uppercase letters in the domain of the email', async () => {
+    const email = 'Test@TEST.com';
+    const normalizedEmail = email.toLowerCase();
+
+    const response = await request(app)
+      .post(SIGNUP_ENDPOINT)
+      .send({ email, password: 'Valid123456' })
+      .expect(200);
+
+    expect(response.body.email).toBe(normalizedEmail);
+  });
+});
+
+describe('tests sanitzation of password input', () => {
+  it('should not contain unescaped characters', async () => {
+    const password = '<script>attack()</script>';
+    // it should escape password like this:
+    //  '&lt;script&gt;attack()&lt;&#x2F;script&gt;'
+    await request(app)
+      .post(SIGNUP_ENDPOINT)
+      .send({ email: 'test@test.com', password });
+  });
+});
