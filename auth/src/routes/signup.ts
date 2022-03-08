@@ -1,4 +1,5 @@
 import { STATUS_CODES } from '@/constants/statusCodes';
+import { InvalidInput } from '@/errors/invalid-input';
 import { User } from '@/models';
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
@@ -36,7 +37,8 @@ signupRouter.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(STATUS_CODES.UNPROCESSABLE_ENTITY).send({});
+      throw new InvalidInput();
+      // return res.status(STATUS_CODES.UNPROCESSABLE_ENTITY).send({});
     }
 
     const { email, password } = req.body as {
@@ -52,16 +54,12 @@ signupRouter.post(
       return res.sendStatus(422);
     }
 
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
+    try {
+      const newUser = await User.create({ email, password });
+      return res.status(STATUS_CODES.CREATED).send({ email: newUser.email });
+    } catch (err) {
       return res.sendStatus(422);
     }
-
-    // logic for saving user in the DB starts here
-    const newUser = await User.create({ email, password });
-
-    return res.status(STATUS_CODES.CREATED).send({ email: newUser.email });
   }
 );
 
