@@ -35,7 +35,7 @@ signupRouter.post(
   body('password').escape(),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
-
+    // const errorsArray = errors.array();
     if (!errors.isEmpty()) {
       throw new InvalidInput();
       // return res.status(STATUS_CODES.UNPROCESSABLE_ENTITY).send({});

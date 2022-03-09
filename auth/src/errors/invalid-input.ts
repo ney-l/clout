@@ -1,19 +1,57 @@
+// import { ValidationError } from 'express-validator';
+import { ValidationError } from 'express-validator';
 import { BaseCustomError } from './base-custom-error';
+import {
+  SerializedErrorOutput,
+  SerializedErrorField,
+} from './types/serialized-error-output';
+
+export type InvalidInputConstructorErrorsParams = ValidationError[];
 
 export class InvalidInput extends BaseCustomError {
-  statusCode = 422;
+  protected statusCode = 422;
 
-  constructor() {
-    super('user input does not meet validation criteria');
+  private errorMessage = 'Input does not meet validation criteria';
 
-    Object.setPrototypeOf(this, InvalidInput);
+  protected errors: ValidationError[] | undefined;
+
+  serializedErrorOutput = undefined;
+
+  constructor(errors?: InvalidInputConstructorErrorsParams) {
+    super('Input does not meet validation criteria');
+    this.errors = errors;
+
+    Object.setPrototypeOf(this, InvalidInput.prototype);
   }
 
   getStatusCode(): number {
     return this.statusCode;
   }
 
-  serializeErrorOutput(): unknown {
-    return undefined;
+  serializeErrorOutput(): SerializedErrorOutput {
+    return this.parseValidationErrors();
+  }
+
+  private parseValidationErrors(): SerializedErrorOutput {
+    const parsedErrors: SerializedErrorField = {};
+
+    if (this.errors && this.errors?.length > 0) {
+      this.errors?.forEach(({ param, msg }) => {
+        if (parsedErrors[param]) {
+          parsedErrors[param].push(msg);
+        } else {
+          parsedErrors[param] = [msg];
+        }
+      });
+    }
+
+    return {
+      errors: [
+        {
+          message: this.errorMessage,
+          fields: parsedErrors,
+        },
+      ],
+    };
   }
 }
