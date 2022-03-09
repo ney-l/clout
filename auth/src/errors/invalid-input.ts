@@ -11,7 +11,7 @@ export type InvalidInputConstructorErrorsParams = ValidationError[];
 export class InvalidInput extends BaseCustomError {
   protected statusCode = 422;
 
-  private errorMessage = 'Input does not meet validation criteria';
+  private defaultErrorMessage = 'Input does not meet validation criteria';
 
   protected errors: ValidationError[] | undefined;
 
@@ -48,7 +48,7 @@ export class InvalidInput extends BaseCustomError {
     return {
       errors: [
         {
-          message: this.errorMessage,
+          message: this.defaultErrorMessage,
           fields: parsedErrors,
         },
       ],

@@ -1,8 +1,9 @@
-import { STATUS_CODES } from '@/constants/statusCodes';
-import { InvalidInput } from '@/errors/invalid-input';
-import { User } from '@/models';
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+
+import { STATUS_CODES } from '@/constants/statusCodes';
+import { InvalidInput, DuplicatedEmail } from '@/errors';
+import { User } from '@/models';
 import { handleMethodNotAllowed } from './utils';
 
 const signupRouter = express.Router();
@@ -35,10 +36,9 @@ signupRouter.post(
   body('password').escape(),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
-    // const errorsArray = errors.array();
+    const errorsArray = errors.array();
     if (!errors.isEmpty()) {
       throw new InvalidInput();
-      // return res.status(STATUS_CODES.UNPROCESSABLE_ENTITY).send({});
     }
 
     const { email, password } = req.body as {
@@ -47,18 +47,28 @@ signupRouter.post(
     };
 
     if (/.+@[A-Z]/g.test(email)) {
-      return res.sendStatus(422);
+      errorsArray.push({
+        location: 'body',
+        value: email,
+        param: email,
+        msg: 'Email is not normalized',
+      });
     }
 
     if (/[><'"/]/g.test(password)) {
-      return res.sendStatus(422);
+      errorsArray.push({
+        location: 'body',
+        value: password,
+        param: 'email',
+        msg: 'Password contains invalid characters',
+      });
     }
 
     try {
       const newUser = await User.create({ email, password });
       return res.status(STATUS_CODES.CREATED).send({ email: newUser.email });
     } catch (err) {
-      return res.sendStatus(422);
+      throw new DuplicatedEmail();
     }
   }
 );
