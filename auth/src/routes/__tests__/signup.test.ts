@@ -1,7 +1,9 @@
 import request from 'supertest';
+
 import { app } from '@/app';
 import { SIGNUP_ENDPOINT } from '@/routes/signup';
 import { User } from '@/models';
+import { PasswordHash } from '@/utils';
 
 /**
  * Available methods in /api/auth/signup
@@ -247,5 +249,40 @@ describe('saving signed up user to database', () => {
         },
       ]
     `);
+  });
+
+  it('should not include the user password on the response', async () => {
+    const response = await request(app)
+      .post(SIGNUP_ENDPOINT)
+      .send(userInfo)
+      .expect(201);
+    expect(response.body.password).toBeUndefined();
+  });
+
+  it('encrypts the user password when saving the user to the database', async () => {
+    await request(app).post(SIGNUP_ENDPOINT).send(userInfo).expect(201);
+
+    const newUser = await User.findOne({ email: userInfo.email });
+    const newUserPassword = newUser?.password;
+    expect(newUserPassword?.length).toBeGreaterThan(0);
+    expect(newUserPassword).not.toEqual(userInfo.password);
+  });
+
+  it('should return true when comparing the hashedPassowrd with its original providedPassword', async () => {
+    const newUser = await User.create(userInfo);
+
+    expect(
+      PasswordHash.compareSync({
+        providedPassword: 'something-random',
+        storedPassword: newUser.password,
+      })
+    ).toEqual(false);
+
+    expect(
+      PasswordHash.compareSync({
+        providedPassword: userInfo.password,
+        storedPassword: newUser.password,
+      })
+    ).toEqual(true);
   });
 });

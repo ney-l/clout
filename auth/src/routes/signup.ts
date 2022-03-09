@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 
 import { InvalidInput, DuplicatedEmail } from '@/errors';
 import { User } from '@/models';
-import { handleMethodNotAllowed } from './utils';
+import { handleMethodNotAllowed } from '@/routes/utils';
 import { UserSignedUp } from '@/events';
 
 const signupRouter = express.Router();
