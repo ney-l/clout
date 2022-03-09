@@ -232,9 +232,20 @@ describe('saving signed up user to database', () => {
     expect(user?.email).toBe(userInfo.email);
   });
 
-  it('does not allows aving a user with a duplicate email', async () => {
+  it('does not allow saving a user with a duplicate email', async () => {
     await request(app).post(SIGNUP_ENDPOINT).send(userInfo).expect(201);
 
-    await request(app).post(SIGNUP_ENDPOINT).send(userInfo).expect(422);
+    const response = await request(app)
+      .post(SIGNUP_ENDPOINT)
+      .send(userInfo)
+      .expect(422);
+
+    expect(response.body.errors).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "message": "The email is already in the database",
+        },
+      ]
+    `);
   });
 });

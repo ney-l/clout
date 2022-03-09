@@ -1,4 +1,5 @@
 import express from 'express';
+
 import 'express-async-errors';
 import { json } from 'body-parser';
 import { signupRouter } from './routes';
@@ -10,7 +11,7 @@ app.use(json());
 
 app.use(signupRouter);
 
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
   res.json({ message: 'hello' });
 });
 

@@ -1,3 +1,4 @@
+import { BaseCustomError, DuplicatedEmail } from '@/errors';
 import { User } from '../user.model';
 
 it('should not save a user if the email already exists in the db', async () => {
@@ -10,17 +11,23 @@ it('should not save a user if the email already exists in the db', async () => {
   expect(newUser1).toBeDefined();
   expect(newUser1.email).toEqual(userInfo.email);
 
-  let error;
+  let err: DuplicatedEmail | undefined;
 
   try {
     await User.create(userInfo);
-  } catch (err) {
-    error = err;
+  } catch (error) {
+    err = error as DuplicatedEmail;
   }
-  expect(error).toBeDefined();
-  expect(error instanceof Error).toBe(true);
 
-  if (error instanceof Error) {
-    expect(error.message).toMatchInlineSnapshot(`"email is already in the db"`);
+  if (err instanceof DuplicatedEmail) {
+    const serializedErrorOutput = err.serializeErrorOutput();
+    expect(err).toBeDefined();
+    expect(err).toBeInstanceOf(BaseCustomError);
+    expect(serializedErrorOutput).toBeDefined();
+    expect(serializedErrorOutput.errors[0].message).toMatchInlineSnapshot(
+      `"The email is already in the database"`
+    );
+  } else {
+    throw new Error('err is not an instance of DuplicatedEmail');
   }
 });

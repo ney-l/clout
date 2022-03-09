@@ -64,6 +64,10 @@ signupRouter.post(
       });
     }
 
+    if (errorsArray.length) {
+      throw new InvalidInput(errorsArray);
+    }
+
     try {
       const newUser = await User.create({ email, password });
       return res.status(STATUS_CODES.CREATED).send({ email: newUser.email });
