@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 
-import { STATUS_CODES } from '@/constants/statusCodes';
 import { InvalidInput, DuplicatedEmail } from '@/errors';
 import { User } from '@/models';
 import { handleMethodNotAllowed } from './utils';
+import { UserSignedUp } from '@/events';
 
 const signupRouter = express.Router();
 
@@ -70,7 +70,10 @@ signupRouter.post(
 
     try {
       const newUser = await User.create({ email, password });
-      return res.status(STATUS_CODES.CREATED).send({ email: newUser.email });
+      const serializedResponse = new UserSignedUp(newUser);
+      return res
+        .status(serializedResponse.getStatusCode())
+        .send(serializedResponse.serializeRest());
     } catch (err) {
       throw new DuplicatedEmail();
     }
