@@ -1,3 +1,4 @@
+import { EmailSender } from '@/utils';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 
@@ -19,6 +20,8 @@ beforeEach(async () => {
   for (const collection of allCollections) {
     await collection.deleteMany({});
   }
+
+  EmailSender.resetEmailSenderInstance();
 });
 
 // After all tests
