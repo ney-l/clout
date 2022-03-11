@@ -2,7 +2,7 @@ import {
   EmailApiSendEmailArgs,
   EmailApiSendEmailResponse,
   EmailSenderEmailApi,
-} from '../utils';
+} from '@/utils';
 
 export const mockSendSignUpVerificationEmail = jest.fn(
   (toEmail: string): Promise<EmailApiSendEmailResponse> =>

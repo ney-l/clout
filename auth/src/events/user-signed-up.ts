@@ -1,6 +1,6 @@
 import { UserDocument } from '@/models';
 import { BaseAuthEvent } from '@/events/base-auth-event';
-import { STATUS_CODES } from '@/constants/statusCodes';
+import { STATUS_CODES } from '@/constants/status-codes';
 
 export type UserSignedUpRestPayload = {
   id: string;
